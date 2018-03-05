@@ -6,6 +6,7 @@ from django.dispatch import receiver
 
 class Event(models.Model):
     name = models.CharField(max_length=50, null=False)
+    image = models.FileField(null=True)
     location = models.TextField(max_length=500, null=False)
     date = models.DateField(null=False)
     time = models.TimeField(null=False)
@@ -14,12 +15,13 @@ class Event(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    image = models.FileField(null=True)
     bio = models.TextField(max_length=500, blank=True, null=True)
     location = models.TextField(max_length=500, blank=True, null=True)
     birth_date = models.DateField(blank=True, null=True)
     age = models.IntegerField(blank=True, null=True)
-    wallet_pin = models.PositiveIntegerField(null=False)
-    wallet_balance = models.PositiveIntegerField(default=0, null=False)
+    wallet_pin = models.PositiveIntegerField(null=True)
+    wallet_balance = models.PositiveIntegerField(default=0, null=True)
 
 
 @receiver(post_save, sender=User)
