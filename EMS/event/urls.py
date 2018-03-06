@@ -4,5 +4,5 @@ from . import views
 app_name = 'event'
 
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
+    url(r'^$', views.home, name='home'),
 ]
