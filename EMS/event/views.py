@@ -12,12 +12,12 @@ def home(request):
             Q(manager__first_name__icontains=query) |
             Q(manager__last_name__icontains=query)
         ).distinct()
-        return render(request, 'event/home.html', {
+        return render(request, './event/home.html', {
             'events': events,
             'query': query,
         })
     else:
-        return render(request, 'event/home.html', {
+        return render(request, './event/home.html', {
             'events': events,
             'query': query,
         })

@@ -13,15 +13,15 @@
             {% for event in events %}
                 <div class="col-sm-4 col-lg-2">
                     <div class="thumbnail">
-                        <a href="{% url 'event:detail' event.id %}">
-                            <img src="{{ event.image.url }}" class="img-responsive">
-                        </a>
+                        <!--<a href="">-->
+                            <!--<img src="{{ event.image.url }}" class="img-responsive">-->
+                        <!--</a>-->
                         <div class="caption">
                             <h2>{{ event.name }}</h2>
                             <h4>{{ event.manager.first_name }} {{ event.manager.last_name }}</h4>
 
                             <!-- View Details -->
-                            <a href="{% url 'event:detail' event.id %}" class="btn btn-primary btn-sm" role="button">View Details</a>
+                            <a href="" class="btn btn-primary btn-sm" role="button">View Details</a>
                         </div>
                     </div>
                 </div>
