@@ -14,8 +14,10 @@ def home(request):
         ).distinct()
         return render(request, 'event/home.html', {
             'events': events,
+            'query': query,
         })
     else:
         return render(request, 'event/home.html', {
             'events': events,
+            'query': query,
         })
