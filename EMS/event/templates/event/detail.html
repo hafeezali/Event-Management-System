@@ -1,0 +1,44 @@
+{% extends 'event/base.html' %}
+{% block title %}{{ event }}{% endblock %}
+{% block events_active %}active{% endblock %}
+
+{% block body %}
+<div class="container-fluid events-container">
+
+    <div class="row">
+
+        <div class="col-sm-4 col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-body">
+{#                    <a href="{% url 'event:detail' event.id %}">#}
+{#                        {% if event.image %}#}
+{#                            <img src="{{ event.image }}" class="img-responsive">#}
+{#                        {% else %}#}
+{#                            <h3>No image to display</h3>#}
+{#                        {% endif %}#}
+{#                    </a>#}
+                    <h1>{{ event.name }}</h1> <small>{{ event.location }}</small>
+                    <h2>{{ event.manager.first_name }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-8 col-md-9">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    {{ event.name }}
+                </div>
+                <div class="panel-body">
+                    <h3>Location: {{ event.location }}</h3>
+                    <h4>Date: {{ event.date }}</h4>
+                    <h4>Time: {{ event.time }}</h4>
+                    <!-- Need to add link to manager profile -->
+{#                    <h4>Manager Profile: <a href="">{{ event.manager.first_name }}</a></h4>#}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

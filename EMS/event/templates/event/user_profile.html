@@ -1,0 +1,45 @@
+{% extends 'event/base.html' %}
+{% block title %}Profile{% endblock %}
+{% block profile_active %}active{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid profile-container">
+
+    <div class="row">
+
+        <div class="col-sm-4 col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-body">
+{#                    <a href="{% url 'event:detail' event.id %}">#}
+{#                        {% if event.image %}#}
+{#                            <img src="{{ event.image }}" class="img-responsive">#}
+{#                        {% else %}#}
+{#                            <h3>No image to display</h3>#}
+{#                        {% endif %}#}
+{#                    </a>#}
+                    <h1>{{ user.last_name }} ,</h1> <h2>{{ user.last_name }}</h2>
+                    <h2>{{ user.username }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-8 col-md-9">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    {{ user.first_name }} {{ user.last_name }}
+                </div>
+                <div class="panel-body">
+                    <h4>Bio: {{ profile.bio }}</h4>
+                    <h4>Age: {{ profile.age }}</h4>
+                    <h4>DoB: {{ profile.birth_date }}</h4>
+                    <h4>Address: {{ profile.location }}</h4>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

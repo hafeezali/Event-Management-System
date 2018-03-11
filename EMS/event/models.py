@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save
+from django.urls import reverse
 from django.dispatch import receiver
 
 
@@ -11,6 +11,9 @@ class Event(models.Model):
     date = models.DateField(null=True)
     time = models.TimeField(null=True)
     manager = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def get_absolute_url(self):
+        return reverse('event:detail', kwargs={'pk': self.pk})
 
     def __str__(self):
         return self.name + ', ' + self.manager.username
@@ -28,12 +31,6 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.username
-
-
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
 
 
 class Ticket(models.Model):
