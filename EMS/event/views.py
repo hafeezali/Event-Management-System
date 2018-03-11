@@ -4,8 +4,9 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
 from django.views.generic.edit import UpdateView
 from django.contrib.auth.models import User
+from datetime import date
 
-from .models import Event, Profile, Ticket
+from .models import Event, Profile
 from .forms import EventForm, UserForm, ProfileForm
 
 IMAGE_FILE_TYPES = ['png', 'jpg', 'jpeg']
@@ -133,3 +134,18 @@ def get_user_profile(request, pk):
     user = User.objects.get(pk=pk)
     profile = Profile.objects.get(user_id=pk)
     return render(request, 'event/user_profile.html', {'user': user, 'profile': profile})
+
+
+def get_past_events(request):
+    events = Event.objects.filter(date__lt=date.today())
+    return render(request, 'event/get_past_events.html', {'events': events})
+
+
+def add_money(request):
+    profile = Profile.objects.get(user=request.user)
+    return render(request, 'event/add_money.html', {'profile': profile})
+
+
+def withdraw_money(request):
+    profile = Profile.objects.get(user=request.user)
+    return render(request, 'event/withdraw.html', {'profile': profile})

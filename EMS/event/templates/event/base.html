@@ -48,8 +48,7 @@
                         </ul>
                     </li>
                     <li class="{% block past_events_active %}{% endblock %}">
-                        <!-- Need to add link past events page -->
-                        <a href=""><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>  Past Events</a>
+                        <a href="{% url 'event:past_events' %}"><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span>  Past Events</a>
                     </li>
                 </ul>
                 <form class="navbar-form navbar-left" role="search" method="get" action="{% url 'event:home' %}">
