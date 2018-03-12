@@ -6,8 +6,8 @@ from django.views.generic.edit import UpdateView
 from django.contrib.auth.models import User
 from datetime import date
 
-from .models import Event, Profile
-from .forms import EventForm, UserForm, ProfileForm
+from .models import Event, Profile, Ticket
+from .forms import EventForm, UserForm, ProfileForm, AddMoneyForm, WithdrawMoneyForm, BuyTicketForm
 
 IMAGE_FILE_TYPES = ['png', 'jpg', 'jpeg']
 
@@ -141,11 +141,66 @@ def get_past_events(request):
     return render(request, 'event/get_past_events.html', {'events': events})
 
 
-def add_money(request):
+def add_money(request, pk):
     profile = Profile.objects.get(user=request.user)
-    return render(request, 'event/add_money.html', {'profile': profile})
+    if request.method == 'POST':
+        form = AddMoneyForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            profile.wallet_balance = profile.wallet_balance + data['amount']
+            profile.save()
+            return render(request, 'event/user_profile.html', {'user': request.user, 'profile': profile})
+    else:
+        form = AddMoneyForm()
+    return render(request, 'event/add_money.html', {'profile': profile, 'form': form})
 
 
-def withdraw_money(request):
+def withdraw_money(request, pk):
     profile = Profile.objects.get(user=request.user)
-    return render(request, 'event/withdraw.html', {'profile': profile})
+    if request.method == 'POST':
+        form = WithdrawMoneyForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            if data['amount'] > profile.wallet_balance:
+                context = {'profile': profile, 'form': form, 'error_message': 'Amount to withdraw cannot be more than '
+                                                                              'available balance'}
+                return render(request, 'event/withdraw_money.html', context)
+            profile.wallet_balance = profile.wallet_balance - data['amount']
+            profile.save()
+            return render(request, 'event/user_profile.html', {'user': request.user, 'profile': profile})
+    else:
+        form = WithdrawMoneyForm()
+    return render(request, 'event/withdraw_money.html', {'profile': profile, 'form': form})
+
+
+def buy_ticket(request, pk):
+    user = request.user
+    event = Event.objects.get(id=pk)
+    profile = Profile.objects.get(user=user)
+    if request.method == 'POST':
+        form = BuyTicketForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            if int(data['pin']) == profile.wallet_pin:
+                if event.fare > profile.wallet_balance:
+                    error_balance = 'Insufficient balance to buy ticket'
+                    return render(request, 'event/buy_ticket.html', {'profile': profile, 'form': form, 'event': event,
+                                                                     'error_balance': error_balance})
+                else:
+                    ticket = Ticket.objects.create(attendee=user, event=event, flag=1)
+                    profile.wallet_balance = profile.wallet_balance - event.fare
+                    profile.save()
+                    return render(request, 'event/user_profile.html', {'user': user, 'profile': profile})
+            else:
+                err = 'Invalid Pin!'
+                context = {'profile': profile, 'form': form, 'event': event, 'error_message': err}
+                return render(request, 'event/buy_ticket.html', context)
+    else:
+        form = BuyTicketForm()
+    return render(request, 'event/buy_ticket.html', {'profile': profile, 'form': form, 'event': event})
+
+
+def invite_users(request):
+    users = User.objects.all()
+
+    return render(request, 'event/invite_users.html', context)

@@ -6,10 +6,10 @@
     {% load staticfiles %}
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link href='https://fonts.googleapis.com/css?family=Satisfy' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="./../../static/event/css/style.css"/>
+    <link rel="stylesheet" type="text/css" href="{%  static 'event/css/style.css' %}"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    <script src="./../../static/event/js/main.js"></script>
+    <script src="{% static 'event/js/main.js' %}"></script>
 </head>
 <body>
     <nav class="navbar navbar-inverse navbar-fixed-top" style="box-sizing: border-box; position: relative">
@@ -32,7 +32,6 @@
                         <a href="{% url 'event:home' %}"><span class="glyphicon glyphicon-glass" aria-hidden="true"></span>  Events</a>
                     </li>
                     <li class="{% block profile_active %}{% endblock %}">
-                        <!-- Need to add link to profile page -->
                         <a href="{% url 'event:user_profile' user.pk %}"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>  Profile</a>
                     </li>
                     <!-- Wallet Dropdown -->
@@ -41,10 +40,8 @@
                             <span class="glyphicon glyphicon-credit-card" aria-hidden="true"></span>  Wallet<span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
-                            <!-- Need to add link to add money page -->
-                            <li><a class="dropdown-item" href=""><span aria-hidden="true"></span>  Add Money</a></li>
-                            <!-- Need to add link to withdraw money page -->
-                            <li><a class="dropdown-item" href=""><span aria-hidden="true"></span>  Withdraw Money</a></li>
+                            <li><a class="dropdown-item" href="{% url 'event:add_money' request.user.pk %}"><span aria-hidden="true"></span>  Add Money</a></li>
+                            <li><a class="dropdown-item" href="{% url 'event:withdraw_money' request.user.pk %}"><span aria-hidden="true"></span>  Withdraw Money</a></li>
                         </ul>
                     </li>
                     <li class="{% block past_events_active %}{% endblock %}">

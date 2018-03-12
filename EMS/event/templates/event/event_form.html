@@ -1,4 +1,12 @@
-<form action="" method="post">{% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Update" />
-</form>
+{% extends 'event/base.html' %}
+{% block title %}Add Money{% endblock %}
+{% block wallet_active %}active{% endblock %}
+
+{% block body %}
+
+    <form action="" method="post">{% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Update" />
+    </form>
+
+{% endblock %}

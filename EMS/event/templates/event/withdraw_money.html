@@ -1,10 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'event/base.html' %}
+{% block title %}Withdraw Money{% endblock %}
+{% block wallet_active %}active{% endblock %}
 
-</body>
-</html>
+{% block body %}
+
+    <h5 class="error_message" style="position: relative; float: bottom;">{{ error_message }}</h5>
+    <form action="" method="post">
+        {% csrf_token %}
+        <label for="wallet_balance">
+            Available Balance:
+            <input type="text" name="balance" value="{{ profile.wallet_balance }}" aria-readonly="true" readonly>
+        </label>
+        {{ form }}
+        <input type="submit" value="Submit">
+    </form>
+
+{% endblock %}

@@ -14,5 +14,7 @@ urlpatterns = [
     url(r'profile/(?P<pk>[0-9]+)/$', views.get_user_profile, name='user_profile'),
     url(r'past_events/$', views.get_past_events, name='past_events'),
     url(r'add_money/(?P<pk>[0-9]+)/$', views.add_money, name='add_money'),
-    url(r'withdraw_money/(?P<pk>[0-9]+)/$', views.withdraw_money, name='withdraw_money')
+    url(r'withdraw_money/(?P<pk>[0-9]+)/$', views.withdraw_money, name='withdraw_money'),
+    url(r'buy_ticket/(?P<pk>[0-9]+)/$', views.buy_ticket, name='buy_ticket'),
+    url(r'invite_users/(?P<pk>[0-9]+)/$', views.invite_users, name='invite_users')
 ]
