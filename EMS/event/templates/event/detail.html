@@ -10,13 +10,7 @@
         <div class="col-sm-4 col-md-3">
             <div class="panel panel-default">
                 <div class="panel-body">
-{#                    <a href="{% url 'event:detail' event.id %}">#}
-{#                        {% if event.image %}#}
-{#                            <img src="{{ event.image }}" class="img-responsive">#}
-{#                        {% else %}#}
-{#                            <h3>No image to display</h3>#}
-{#                        {% endif %}#}
-{#                    </a>#}
+                    <img src="./../../static/event/images/default_event.jpg" class="img-responsive">
                     <h1>{{ event.name }}</h1> <small>{{ event.location }}</small>
                     <h2>{{ event.manager.first_name }}</h2>
                 </div>

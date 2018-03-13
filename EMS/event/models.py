@@ -22,7 +22,7 @@ class Event(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    # image = models.FileField(null=True)
+    # image = models.FileField(default='settings.MEDIA_ROOT/default_user.jpg')
     bio = models.TextField(max_length=500, blank=True, null=True)
     location = models.TextField(max_length=500, blank=True, null=True)
     birth_date = models.DateField(blank=True, null=True)

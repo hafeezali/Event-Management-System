@@ -39,7 +39,7 @@ def home(request):
 
 def register(request):
     register_form = UserForm(request.POST or None, prefix="register")
-    profile_form = ProfileForm(request.POST or None, prefix="profile")
+    profile_form = ProfileForm(request.POST or None, request.FILES or None, prefix="profile")
     if register_form.is_valid() and profile_form.is_valid():
         user = register_form.save(commit=False)
         username = register_form.cleaned_data['username']
@@ -49,6 +49,16 @@ def register(request):
         profile = profile_form.save(commit=False)
         profile.user = user
         profile.wallet_balance = 0
+        # profile.image = profile_form.cleaned_data['image']
+        # file_type = profile.image.url.split('.')[-1]
+        # file_type = file_type.lower()
+        # if file_type not in IMAGE_FILE_TYPES:
+        #     context = {
+        #         'register_form': register_form,
+        #         'profile_form': profile_form,
+        #         'error_message': 'Image file must be PNG, JPG, or JPEG',
+        #     }
+        #     return render(request, 'event/register.html', context)
         profile.save()
         user = authenticate(username=username, password=password)
         if user is not None:
@@ -58,7 +68,7 @@ def register(request):
                 return render(request, 'event/home.html', {'events': events, 'user': user})
     context = {
         "register_form": register_form,
-        "profile_form": profile_form
+        "profile_form": profile_form,
     }
     return render(request, 'event/register.html', context)
 
@@ -82,10 +92,6 @@ def login_user(request):
 
 def logout_user(request):
     logout(request)
-    # form = UserForm(request.POST or None)
-    # context = {
-    #     "form": form,
-    # }
     return render(request, 'event/login.html')
 
 
@@ -133,7 +139,8 @@ class UpdateEvent(UpdateView):
 def get_user_profile(request, pk):
     user = User.objects.get(pk=pk)
     profile = Profile.objects.get(user_id=pk)
-    return render(request, 'event/user_profile.html', {'user': user, 'profile': profile})
+    tickets = Ticket.objects.filter(attendee=user)
+    return render(request, 'event/user_profile.html', {'user': user, 'profile': profile, 'tickets': tickets})
 
 
 def get_past_events(request):
@@ -147,9 +154,15 @@ def add_money(request, pk):
         form = AddMoneyForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            profile.wallet_balance = profile.wallet_balance + data['amount']
-            profile.save()
-            return render(request, 'event/user_profile.html', {'user': request.user, 'profile': profile})
+            if int(data['pin']) == profile.wallet_pin:
+                profile.wallet_balance = profile.wallet_balance + data['amount']
+                profile.save()
+                tickets = Ticket.objects.filter(attendee=request.user)
+                return render(request, 'event/user_profile.html', {'user': request.user, 'profile': profile, 'tickets': tickets})
+            else:
+                err = 'Invalid Pin!'
+                context = {'profile': profile, 'form': form, 'error_message': err}
+                return render(request, 'event/add_money.html', context)
     else:
         form = AddMoneyForm()
     return render(request, 'event/add_money.html', {'profile': profile, 'form': form})
@@ -161,13 +174,19 @@ def withdraw_money(request, pk):
         form = WithdrawMoneyForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            if data['amount'] > profile.wallet_balance:
-                context = {'profile': profile, 'form': form, 'error_message': 'Amount to withdraw cannot be more than '
-                                                                              'available balance'}
+            if int(data['pin']) == profile.wallet_pin:
+                if data['amount'] > profile.wallet_balance:
+                    context = {'profile': profile, 'form': form, 'error_message': 'Amount to withdraw cannot be more than '
+                                                                                  'available balance'}
+                    return render(request, 'event/withdraw_money.html', context)
+                profile.wallet_balance = profile.wallet_balance - data['amount']
+                profile.save()
+                tickets = Ticket.objects.filter(attendee=request.user)
+                return render(request, 'event/user_profile.html', {'user': request.user, 'profile': profile, 'tickets': tickets})
+            else:
+                err = 'Invalid Pin!'
+                context = {'profile': profile, 'form': form, 'error_message': err}
                 return render(request, 'event/withdraw_money.html', context)
-            profile.wallet_balance = profile.wallet_balance - data['amount']
-            profile.save()
-            return render(request, 'event/user_profile.html', {'user': request.user, 'profile': profile})
     else:
         form = WithdrawMoneyForm()
     return render(request, 'event/withdraw_money.html', {'profile': profile, 'form': form})
@@ -187,10 +206,14 @@ def buy_ticket(request, pk):
                     return render(request, 'event/buy_ticket.html', {'profile': profile, 'form': form, 'event': event,
                                                                      'error_balance': error_balance})
                 else:
-                    ticket = Ticket.objects.create(attendee=user, event=event, flag=1)
+                    Ticket.objects.create(attendee=user, event=event, flag=1)
                     profile.wallet_balance = profile.wallet_balance - event.fare
+                    owner = event.manager
+                    owner_profile = Profile.objects.get(user=owner)
+                    owner_profile.wallet_balance = owner_profile.wallet_balance + event.fare
                     profile.save()
-                    return render(request, 'event/user_profile.html', {'user': user, 'profile': profile})
+                    tickets = Ticket.objects.filter(attendee=request.user)
+                    return render(request, 'event/user_profile.html', {'user': user, 'profile': profile, 'tickets': tickets})
             else:
                 err = 'Invalid Pin!'
                 context = {'profile': profile, 'form': form, 'event': event, 'error_message': err}
@@ -200,7 +223,29 @@ def buy_ticket(request, pk):
     return render(request, 'event/buy_ticket.html', {'profile': profile, 'form': form, 'event': event})
 
 
-def invite_users(request):
-    users = User.objects.all()
-
+def invite_users(request, pk):
+    all_users = User.objects.all()
+    event = Event.objects.get(id=pk)
+    attendees = []
+    for ticket in Ticket.objects.all():
+        if ticket.event == event:
+            attendees.append(ticket.attendee)
+    users = list(set(all_users) ^ set(attendees))
+    context = {'users': users, 'event': event}
     return render(request, 'event/invite_users.html', context)
+
+
+def send_invites(request, pk):
+    all_users = User.objects.all()
+    event = Event.objects.get(id=pk)
+    attendees = []
+    for ticket in Ticket.objects.all():
+        if ticket.event == event:
+            attendees.append(ticket.attendee)
+    users = list(set(all_users) ^ set(attendees))
+    if request.method == 'POST':
+        for user in users:
+            if request.POST[user.username] == 'yes':
+                Ticket.objects.create(attendee=user, event=event, flag=0)
+    events = Event.objects.all()
+    return render(request, 'event/home.html', {'events': events})

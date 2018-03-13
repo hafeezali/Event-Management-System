@@ -28,10 +28,12 @@ class ProfileForm(forms.ModelForm):
 
 class AddMoneyForm(forms.Form):
     amount = forms.IntegerField(label='Amount to Add', min_value=0)
+    pin = forms.CharField(label='Enter PIN', widget=forms.PasswordInput)
 
 
 class WithdrawMoneyForm(forms.Form):
     amount = forms.IntegerField(label='Amount to Withdraw', min_value=0)
+    pin = forms.CharField(label='Enter PIN', widget=forms.PasswordInput)
 
 
 class BuyTicketForm(forms.Form):

@@ -11,20 +11,16 @@
         <div class="col-sm-4 col-md-3">
             <div class="panel panel-default">
                 <div class="panel-body">
-{#                    <a href="{% url 'event:detail' event.id %}">#}
-{#                        {% if event.image %}#}
-{#                            <img src="{{ event.image }}" class="img-responsive">#}
-{#                        {% else %}#}
-{#                            <h3>No image to display</h3>#}
-{#                        {% endif %}#}
-{#                    </a>#}
-                    <h1>{{ user.last_name }} ,</h1> <h2>{{ user.last_name }}</h2>
+                    <img src="" class="img-responsive">
+                    <br>
+                    <h1>{{ user.last_name }} ,</h1> <h2>{{ user.first_name }}</h2>
                     <h2>{{ user.username }}</h2>
                 </div>
             </div>
         </div>
 
         <div class="col-sm-8 col-md-9">
+
             <div class="panel panel-info">
                 <div class="panel-heading">
                     {{ user.first_name }} {{ user.last_name }}
@@ -36,6 +32,20 @@
                     <h4>Address: {{ profile.location }}</h4>
                 </div>
             </div>
+
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    {{ user.first_name }}'s Tickets & Invitations
+                </div>
+                <div class="panel-body">
+                    {% for ticket in tickets %}
+                        <h4>Event: {{ ticket.event.name }}</h4>
+                        <h4>Type: {% if ticket.flag %} Ticket {% else %} Invitation {% endif %}</h4>
+                        <br>
+                    {% endfor %}
+                </div>
+            </div>
+
         </div>
 
     </div>

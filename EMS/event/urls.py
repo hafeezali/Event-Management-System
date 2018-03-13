@@ -16,5 +16,6 @@ urlpatterns = [
     url(r'add_money/(?P<pk>[0-9]+)/$', views.add_money, name='add_money'),
     url(r'withdraw_money/(?P<pk>[0-9]+)/$', views.withdraw_money, name='withdraw_money'),
     url(r'buy_ticket/(?P<pk>[0-9]+)/$', views.buy_ticket, name='buy_ticket'),
-    url(r'invite_users/(?P<pk>[0-9]+)/$', views.invite_users, name='invite_users')
+    url(r'invite_users/(?P<pk>[0-9]+)/$', views.invite_users, name='invite_users'),
+    url(r'send_invites/(?P<pk>[0-9]+)/$', views.send_invites, name='send_invites')
 ]

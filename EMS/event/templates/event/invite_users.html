@@ -1,25 +1,18 @@
 {% extends 'event/base.html' %}
-{% block title %}Buy Ticket{% endblock %}
-{% block wallet_active %}active{% endblock %}
+{% block title %}Send invitations{% endblock %}
 
 {% block body %}
 
-    <h5 class="error_message">{{ error_message }}</h5>
-    {% if error_balance %}
-        <h5 class="error_message">{{ error_balance }}</h5>
-        <a href="{% url 'event:add_money' profile.user.pk %}"><button>Add Money</button></a>
-    {% endif %}
-    <form action="" method="post">
+    <form action="{% url 'event:send_invites' event.id %}" method="post">
         {% csrf_token %}
-        <label for="wallet_balance">
-            Available Balance:
-            <input type="text" name="balance" value="{{ profile.wallet_balance }}" aria-readonly="true" readonly>
+        <h3>Type 'yes' beside username to send invitations to that user for the event: {{ event.name }} else type 'no'</h3>
+        {% for user in users %}
+        <label>
+            {{ user.first_name }} {{ user.last_name }}
+            <input type="text" name="{{ user.username }}">
         </label>
-        <label for="wallet_balance">
-            Ticket Fare:
-            <input type="text" name="balance" value="{{ event.fare }}" aria-readonly="true" readonly>
-        </label>
-        {{ form }}
+        <br>
+        {% endfor %}
         <input type="submit" value="Submit">
     </form>
 
