@@ -32,7 +32,7 @@
                         <a href="{% url 'event:home' %}"><span class="glyphicon glyphicon-glass" aria-hidden="true"></span>  Events</a>
                     </li>
                     <li class="{% block profile_active %}{% endblock %}">
-                        <a href="{% url 'event:user_profile' user.pk %}"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>  Profile</a>
+                        <a href="{% url 'event:user_profile' user.pk %}" id="id_profile"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>  Profile</a>
                     </li>
                     <!-- Wallet Dropdown -->
                     <li class="dropdown {% block wallet_active %}{% endblock %}">
