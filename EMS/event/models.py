@@ -6,7 +6,7 @@ from django.dispatch import receiver
 
 class Event(models.Model):
     name = models.CharField(max_length=50, null=False)
-    image = models.ImageField(default='settings.')
+    image = models.ImageField(default='settings.MEDIA_ROOT/default_event.jpg')
     location = models.TextField(max_length=500, null=False)
     date = models.DateField(null=True)
     time = models.TimeField(null=True)

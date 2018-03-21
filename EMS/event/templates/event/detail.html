@@ -10,7 +10,7 @@
         <div class="col-sm-4 col-md-3">
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <img src="./../../static/event/images/default_event.jpg" class="img-responsive">
+                    <img src="{{ event.image.url }}" class="img-responsive">
                     <h1>{{ event.name }}</h1> <small>{{ event.location }}</small>
                     <h2>{{ event.manager.first_name }}</h2>
                 </div>

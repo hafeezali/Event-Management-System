@@ -1,4 +1,6 @@
 from django.conf.urls import url
+from django.conf import settings
+from django.conf.urls.static import static
 from . import views
 
 app_name = 'event'
@@ -19,3 +21,7 @@ urlpatterns = [
     url(r'invite_users/(?P<pk>[0-9]+)/$', views.invite_users, name='invite_users'),
     url(r'send_invites/(?P<pk>[0-9]+)/$', views.send_invites, name='send_invites')
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
