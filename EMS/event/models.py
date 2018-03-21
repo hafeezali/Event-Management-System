@@ -6,7 +6,7 @@ from django.dispatch import receiver
 
 class Event(models.Model):
     name = models.CharField(max_length=50, null=False)
-    # image = models.FileField(null=True)
+    image = models.ImageField(default='settings.')
     location = models.TextField(max_length=500, null=False)
     date = models.DateField(null=True)
     time = models.TimeField(null=True)
@@ -22,6 +22,7 @@ class Event(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    image = models.ImageField(default='settings.MEDIA_ROOT/default_user.jpg')
     # image = models.FileField(default='settings.MEDIA_ROOT/default_user.jpg')
     bio = models.TextField(max_length=500, blank=True, null=True)
     location = models.TextField(max_length=500, blank=True, null=True)

@@ -23,7 +23,7 @@ class ProfileForm(forms.ModelForm):
 
     class Meta:
         model = Profile
-        fields = ['bio', 'location', 'birth_date', 'age', 'wallet_pin']
+        fields = ['bio', 'location', 'birth_date', 'age', 'wallet_pin', 'image']
 
 
 class AddMoneyForm(forms.Form):
