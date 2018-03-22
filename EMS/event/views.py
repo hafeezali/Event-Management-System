@@ -5,6 +5,7 @@ from django.contrib.auth import logout
 from django.views.generic.edit import UpdateView
 from django.contrib.auth.models import User
 from datetime import date
+import json
 
 from .models import Event, Profile, Ticket
 from .forms import EventForm, UserForm, ProfileForm, AddMoneyForm, WithdrawMoneyForm, BuyTicketForm
@@ -99,6 +100,12 @@ def add_event(request):
     if not request.user.is_authenticated:
         return render(request, 'event/login.html')
     else:
+        all_events = Event.objects.all()
+        user = request.user
+        event_names = []
+        for event in all_events:
+            if event.manager == user:
+                event_names.append(event.name)
         form = EventForm(request.POST or None, request.FILES or None)
         if form.is_valid():
             event = form.save(commit=False)
@@ -109,6 +116,7 @@ def add_event(request):
             if file_type not in IMAGE_FILE_TYPES:
                 context = {
                     'event': event,
+                    'event_names': json.dumps(event_names),
                     'form': form,
                     'error_message': 'Image file must be PNG, JPG, or JPEG',
                 }
@@ -117,6 +125,7 @@ def add_event(request):
             return render(request, 'event/detail.html', {'event': event})
         context = {
             "form": form,
+            "event_names": json.dumps(event_names)
         }
         return render(request, 'event/add_event.html', context)
 
@@ -127,12 +136,13 @@ def detail(request, pk):
     else:
         user = request.user
         event = get_object_or_404(Event, pk=pk)
-        return render(request, 'event/detail.html', {'event': event, 'user': user})
+        profile = get_object_or_404(Profile, user=user)
+        return render(request, 'event/detail.html', {'event': event, 'user': user, 'profile': profile})
 
 
 class UpdateEvent(UpdateView):
     model = Event
-    fields = ['name', 'location', 'date', 'time']
+    fields = ['name', 'location', 'date', 'time', 'image']
 
 
 def get_user_profile(request, pk):

@@ -17,14 +17,25 @@
                         {% include 'event/form_template.html' %}
                         <div class="form-group">
                             <div class="col-sm-offset-2 col-sm-10">
-                                <button type="submit" class="btn btn-success">Submit</button>
+                                <button type="submit" class="btn btn-success">Add Event</button>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
-
         </div>
     </div>
+
+    <script>
+        var names = {{ event_names|safe  }};
+        document.getElementById("id_name").onblur = function () {
+            if(document.getElementById("id_name").value.length !== 0){
+                if(names.indexOf(document.getElementById("id_name").value) > -1){
+                    alert("The name '" + document.getElementById("id_name").value + "' is already taken. Please choose another name for the event!");
+                    document.getElementById("id_name").value = "";
+                }
+            }
+        };
+    </script>
 
 {% endblock %}
