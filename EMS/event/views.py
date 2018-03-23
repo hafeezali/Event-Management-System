@@ -4,7 +4,10 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
 from django.views.generic.edit import UpdateView
 from django.contrib.auth.models import User
+from django.http import HttpResponse
 from datetime import date
+
+import datetime
 import json
 
 from .models import Event, Profile, Ticket
@@ -100,12 +103,6 @@ def add_event(request):
     if not request.user.is_authenticated:
         return render(request, 'event/login.html')
     else:
-        all_events = Event.objects.all()
-        user = request.user
-        event_names = []
-        for event in all_events:
-            if event.manager == user:
-                event_names.append(event.name)
         form = EventForm(request.POST or None, request.FILES or None)
         if form.is_valid():
             event = form.save(commit=False)
@@ -116,7 +113,6 @@ def add_event(request):
             if file_type not in IMAGE_FILE_TYPES:
                 context = {
                     'event': event,
-                    'event_names': json.dumps(event_names),
                     'form': form,
                     'error_message': 'Image file must be PNG, JPG, or JPEG',
                 }
@@ -125,7 +121,6 @@ def add_event(request):
             return render(request, 'event/detail.html', {'event': event})
         context = {
             "form": form,
-            "event_names": json.dumps(event_names)
         }
         return render(request, 'event/add_event.html', context)
 
@@ -136,13 +131,17 @@ def detail(request, pk):
     else:
         user = request.user
         event = get_object_or_404(Event, pk=pk)
-        profile = get_object_or_404(Profile, user=user)
-        return render(request, 'event/detail.html', {'event': event, 'user': user, 'profile': profile})
+        tickets = Ticket.objects.filter(event=event)
+        return render(request, 'event/detail.html', {'event': event, 'user': user, 'tickets': tickets})
 
 
-class UpdateEvent(UpdateView):
+class EventUpdate(UpdateView):
     model = Event
     fields = ['name', 'location', 'date', 'time', 'image']
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super(EventUpdate, self).get(request, *args, **kwargs)
 
 
 def get_user_profile(request, pk):
@@ -233,24 +232,26 @@ def buy_ticket(request, pk):
 
 
 def invite_users(request, pk):
-    all_users = User.objects.all()
+    all_users = User.objects.filter(is_superuser=False)
     event = Event.objects.get(id=pk)
     attendees = []
     for ticket in Ticket.objects.all():
         if ticket.event == event:
             attendees.append(ticket.attendee)
+    attendees.append(request.user)
     users = list(set(all_users) ^ set(attendees))
     context = {'users': users, 'event': event}
     return render(request, 'event/invite_users.html', context)
 
 
 def send_invites(request, pk):
-    all_users = User.objects.all()
+    all_users = User.objects.filter(is_superuser=False)
     event = Event.objects.get(id=pk)
     attendees = []
     for ticket in Ticket.objects.all():
         if ticket.event == event:
             attendees.append(ticket.attendee)
+    attendees.append(request.user)
     users = list(set(all_users) ^ set(attendees))
     if request.method == 'POST':
         for user in users:
@@ -258,3 +259,29 @@ def send_invites(request, pk):
                 Ticket.objects.create(attendee=user, event=event, flag=0)
     events = Event.objects.all()
     return render(request, 'event/home.html', {'events': events})
+
+
+def event_name_validate(request):
+    user = request.user
+    name = request.GET.get('name')
+    all_events = Event.objects.all()
+    event_names = []
+    for event in all_events:
+        if event.manager == user:
+            event_names.append(event.name)
+    if name in event_names:
+        return HttpResponse(json.dumps({'valid': 'false'}), content_type="application/json")
+    else:
+        return HttpResponse(json.dumps({'valid': 'true'}), content_type="application/json")
+
+
+def event_date_validate(request):
+    inp_date = request.GET.get('date')
+    if inp_date:
+        inp_date = datetime.datetime.strptime(inp_date, "%m/%d/%Y").date()
+        if inp_date < date.today():
+            return HttpResponse(json.dumps({'valid': 'false'}), content_type="application/json")
+        else:
+            return HttpResponse(json.dumps({'valid': 'true'}), content_type="application/json")
+    else:
+        return HttpResponse(json.dumps({'valid': 'true'}), content_type="application/json")

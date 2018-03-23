@@ -43,6 +43,7 @@
         </div>
 
         <div class="col-sm-8 col-md-9">
+
             <div class="panel panel-info">
                 <div class="panel-heading">
                     {{ event.name }}
@@ -55,6 +56,20 @@
                     <h4>Manager's Profile: <a href="{% url 'event:user_profile' event.manager.id %}">{{ event.manager.first_name }}</a></h4>
                 </div>
             </div>
+
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    {{ event.name }}'s attendees and invitees
+                </div>
+                <div class="panel-body">
+                    {% for ticket in tickets %}
+                        <h4>User Name: {{ ticket.attendee.first_name }}  {{ ticket.attendee.last_name }}</h4>
+                        <h4>Type: {% if ticket.flag %} Ticket {% else %} Invitation {% endif %}</h4>
+                        <br>
+                    {% endfor %}
+                </div>
+            </div>
+
         </div>
 
     </div>
